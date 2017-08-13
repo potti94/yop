@@ -1,8 +1,7 @@
-#!/usr/bin/env python3.5
+#!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
 from unicurses import *
-from color import *
 from nodes import *
 from random import *
 import time
@@ -114,18 +113,16 @@ class display(Thread):
         x=stdscr.getmaxyx()[1]
         y=stdscr.getmaxyx()[0]
     
-        while True:
+        while key!=ord("q"):
             #nodes=get_cluster_nodes()
-            nb_nodes=randint(0,36)
-            #nb_nodes=28
+            #nb_nodes=randint(0,36)
+            nb_nodes=36
             nodes=set_nodes(nb_nodes)
         #     ================== window decomposition ===========================s
-            up_window=newwin(11,143, 0, 0)
+            up_window=newwin(11,x, 0, 0)
             up_panel=new_panel(up_window)
-            nodelay(up_window, 1)
-            down_window=newwin(42-11,143, 11, 0)
+            down_window=newwin(y-11,x, 11, 0)
             down_panel=new_panel(down_window)
-            nodelay(down_window, 1)
         #   ===================================================================                
             header(nb_nodes,nodes,up_window,temp)
             footer(down_window)
@@ -144,7 +141,8 @@ def main():
 		key=getch()
 		if key==ord("m") or key==ord("v") or key==ord("s") or key==ord("i"):
 			temp=key
-			
+	
+	thread1.join()		
 	endwin()
 	quit()
 	
