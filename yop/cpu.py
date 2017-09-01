@@ -36,15 +36,16 @@ def print_line(line,i,max_dashes,nodes,up_window,var,fix,n,page):
 
 def print_total(middel_window,total_cap,total_used,choice):
 	perc=round(float((total_used/total_cap)*100),2)
+	init_pair(4,COLOR_WHITE, COLOR_GREEN)
 	nb_dashes=int(((total_used)/total_cap)*100)
 	dashes="|"*nb_dashes
 	spaces=" "* int(60-nb_dashes)
 	if choice ==0:
 		line="MEM: [%s%s] %5s%%" % (dashes, spaces,perc)
-		mvwaddstr(middel_window,0, 0, line,A_BOLD)
+		mvwaddstr(middel_window,0, 0, line,A_BOLD+color_pair(4))
 	else:
 		line="CPU: [%s%s] %5s%%" % (dashes, spaces,perc)
-		mvwaddstr(middel_window,1, 0, line,A_BOLD)
+		mvwaddstr(middel_window,1, 0, line,A_BOLD+color_pair(4))
 				
 
 
@@ -121,28 +122,33 @@ def footer(down_window,y):
 		mvwaddstr(down_window,y-13,len(long)+1, line[1],color_pair(1)+A_REVERSE+A_BOLD)
 		long=long+line[1]
 		
-def limits(down_window,decal,y):
-	i=1
+def limits(down_window,bordure,y):
+	i=0
+	decal=0
 	init_pair(3,COLOR_WHITE,COLOR_BLUE)
-	while i<17:
-		mvwaddstr(down_window,0,i*int(decal)-1,"|",color_pair(3))
+	while i<16:
+		mvwaddstr(down_window,0,decal+bordure[i],"|",color_pair(3))
 		j=1
-		while j<y-13:
-			mvwaddstr(down_window,j,i*int(decal)-1,"|")
+		while j<21:
+			mvwaddstr(down_window,j,decal+bordure[i],"|")
 			j+=1
-		i+=1	
+		decal+=bordure[i]+1
+		i+=1
+			
 	
 
 def corp(down_window,nodes,nb_nodes,page,x,y):
-	decal=round(x/17)
+	decal=0
 	i=j=0
+	bordure=[19,17,5,2,4,6,6,6,3,3,3,3,3,11,4,8,18]
 	init_pair(2,COLOR_BLACK,COLOR_BLUE)
 	long=""
-	for line in {"Node","User","Queue","S","ID","UMEM","RMEM","NMEM","UC","RC","NC","UCO","RCO","T","P","Time+"}:
-		long+=line+" "*int((decal-len(line)))
+	for line in ("ID","User","Queue","S","Node","UMEM","RMEM","NMEM","UC","RC","NC","UCO","RCO","T","P","Time+"):
+		long+=line+" "*int((bordure[i]-len(line)+1))
+		i+=1
 	long+="Name"+" "*int(x-len(long)-4)
-	mvwaddstr(down_window,0,0,long,color_pair(2)+A_BLINK)
-	limits(down_window,decal,y)
+	mvwaddstr(down_window,0,0,long,color_pair(2))
+	limits(down_window,bordure,y)
 	nb_pages=nb_nodes//20
 	if page >nb_pages:
 		page=nb_pages
@@ -152,68 +158,89 @@ def corp(down_window,nodes,nb_nodes,page,x,y):
 	i=start
 	f=finish
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].user[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, 0, str(nodes[i].node_id[1])+"/"+str(nodes[i].node_id[0]), A_BOLD)
 		i+=1
+
+	i=start
+	while i<f and i<nb_nodes:
+		mvwaddstr(down_window, i%20+1, decal+bordure[j]+1, nodes[i].user[0], A_BOLD)
+		i+=1
+	decal+=bordure[j]+2
 	j+=1
 	i=start
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].queue[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].queue[0], A_BOLD)
 		i+=1
+	decal+=bordure[j]+1	
 	i=start	
 	j+=1
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), (nodes[i].node_state[0])[3], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], (nodes[i].node_state[0])[3], A_BOLD)
 		i+=1
+	decal+=bordure[j]+1	
 	j+=1
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal),i, A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j],i, A_BOLD)
 		i+=1
+	decal+=bordure[j]+1	
 	j+=1
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].mem[0], A_BOLD)
-		mvwaddstr(down_window, i%20+1, (j+1)*int(decal), nodes[i].mem[1], A_BOLD)
-		mvwaddstr(down_window, i%20+1, (j+2)*int(decal), nodes[i].mem[2], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].mem[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j+1]+bordure[j]+1, nodes[i].mem[1], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j+2]+bordure[j+1]+bordure[j]+2, nodes[i].mem[2], A_BOLD)
 		i+=1
+	decal+=bordure[j]+3+bordure[j+2]+bordure[j+1]
 	j+=3
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].c[0], A_BOLD)
-		mvwaddstr(down_window, i%20+1, (j+1)*int(decal), nodes[i].c[1], A_BOLD)
-		mvwaddstr(down_window, i%20+1, (j+2)*int(decal), nodes[i].c[2], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].c[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j+1]+bordure[j]+1, nodes[i].c[1], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j+2]+bordure[j+1]+bordure[j]+2, nodes[i].c[2], A_BOLD)
 		i+=1
+	decal+=bordure[j]+3+bordure[j+2]+bordure[j+1]
 	j+=3
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].co[0], A_BOLD)
-		mvwaddstr(down_window, i%20+1, (j+1)*int(decal), nodes[i].co[1], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].co[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j+1]+bordure[j]+1, nodes[i].co[1], A_BOLD)
 		i+=1
+	decal+=bordure[j]+bordure[j+1]+2	
 	j+=2
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].t[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].t[0], A_BOLD)
 		i+=1
+	decal+=bordure[j]+1	
 	j+=1
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), str(nodes[i].p[0])+"%", A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], str(nodes[i].p[0])+"%", A_BOLD)
 		i+=1
+	decal+=bordure[j]+1	
 	j+=1
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].time[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].time[0], A_BOLD)
 		i+=1
+	decal+=bordure[j]+1	
 	j+=1
 	i=start	
 	while i<f and i<nb_nodes:
-		mvwaddstr(down_window, i%20+1, j*int(decal), nodes[i].name[0], A_BOLD)
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].name[0], A_BOLD)
 		i+=1
 	j+=1
 	
 
 
-
+class cNodes(Thread):
+    def __init__(self,up_window,middel_window,nb_nodes,nodes):
+        Thread.__init__(self)
+    
+    def run(self):
+    	header(nb_nodes,nodes,up_window,middel_window,page)
+    	
 
 
 		
@@ -247,6 +274,11 @@ class display(Thread):
             header(nb_nodes,nodes,up_window,middel_window,page)
             footer(down_window,y)
             corp(down_window,nodes,nb_nodes,page,x,y)
+            thread2=cNodes(up_window,middel_window,nb_nodes,nodes)
+            if temp==ord("n"):
+            	print "sssssssss"
+            	thread2.start()
+            	
             update_panels()
             doupdate()
             time.sleep(1)			
@@ -257,7 +289,6 @@ def main():
 	global page
 	page=0
 	temp=key=109
-	
 	thread1=display(temp)
 	thread1.start()
 	while key!=ord("q"):
