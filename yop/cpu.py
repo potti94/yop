@@ -114,23 +114,23 @@ def header(nb_nodes,nodes,up_window,middel_window,page):
 	total_used=k	
 	
 def footer(down_window,y):
-	init_pair(1,COLOR_WHITE,COLOR_BLUE)
+	init_pair(1,COLOR_BLUE,COLOR_BLACK)
 	long=""
 	for line in {("h :","HELP "),("DOWN :","CHANGE NODES "),("UP :","CHANGE NODES "),("n :","NODES "),("q :","QUIT")}:
-		mvwaddstr(down_window,y-13,len(long)+1, line[0],A_BOLD)
+		mvwaddstr(down_window,y-14,len(long)+1, line[0],A_BOLD)
 		long=long+line[0]
-		mvwaddstr(down_window,y-13,len(long)+1, line[1],color_pair(1)+A_REVERSE+A_BOLD)
+		mvwaddstr(down_window,y-14,len(long)+1, line[1],color_pair(1)+A_BOLD+A_REVERSE)
 		long=long+line[1]
 		
 def limits(down_window,bordure,y):
 	i=0
 	decal=0
-	init_pair(3,COLOR_WHITE,COLOR_BLUE)
+	init_pair(3,COLOR_BLUE,COLOR_WHITE)
 	while i<16:
-		mvwaddstr(down_window,0,decal+bordure[i],"|",color_pair(3))
+		mvwaddstr(down_window,0,decal+bordure[i],"|",color_pair(3)+A_BOLD+A_REVERSE)
 		j=1
 		while j<21:
-			mvwaddstr(down_window,j,decal+bordure[i],"|")
+			mvwaddstr(down_window,j,decal+bordure[i],"|",A_BOLD)
 			j+=1
 		decal+=bordure[i]+1
 		i+=1
@@ -141,13 +141,13 @@ def corp(down_window,nodes,nb_nodes,page,x,y):
 	decal=0
 	i=j=0
 	bordure=[19,17,5,2,4,6,6,6,3,3,3,3,3,11,4,8,18]
-	init_pair(2,COLOR_BLACK,COLOR_BLUE)
+	init_pair(2,COLOR_BLUE,COLOR_BLACK)
 	long=""
 	for line in ("ID","User","Queue","S","Node","UMEM","RMEM","NMEM","UC","RC","NC","UCO","RCO","T","P","Time+"):
 		long+=line+" "*int((bordure[i]-len(line)+1))
 		i+=1
 	long+="Name"+" "*int(x-len(long)-4)
-	mvwaddstr(down_window,0,0,long,color_pair(2))
+	mvwaddstr(down_window,0,0,long,color_pair(2)+A_REVERSE+A_BOLD)
 	limits(down_window,bordure,y)
 	nb_pages=nb_nodes//20
 	if page >nb_pages:
@@ -231,22 +231,116 @@ def corp(down_window,nodes,nb_nodes,page,x,y):
 		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].name[0], A_BOLD)
 		i+=1
 	j+=1
+
+
+
+
+def N_limits(down_window,bordure,y):
+	i=0
+	decal=0
+	while i<3:
+		mvwaddstr(down_window,0,decal+bordure[i],"|",color_pair(3)+A_BOLD+A_REVERSE)
+		j=1
+		while j<21:
+			mvwaddstr(down_window,j,decal+bordure[i],"|",A_BOLD)
+			j+=1
+		decal+=bordure[i]+1
+		i+=1
+
+
+
+
+
+
+def N_corp(down_window,nodes,nb_nodes,page,x,y):
+	decal=0
+	i=j=0
+	bordure=[4,19,27,25]
+	init_pair(2,COLOR_BLUE,COLOR_BLACK)
+	long=""
+	for line in ("Node","ID","IP"):
+		long+=line+" "*int((bordure[i]-len(line)+1))
+		i+=1
+	long+="Rack"+" "*int(x-len(long)-4)
+	mvwaddstr(down_window,0,0,long,color_pair(2)+A_REVERSE+A_BOLD)
+	N_limits(down_window,bordure,y)
+	nb_pages=nb_nodes//20
+	if page >nb_pages:
+		page=nb_pages
+			
+	start=page*20
+	finish=page*20+20
+	i=start
+	f=finish
+	
+	
+	while i<f and i<nb_nodes:
+		mvwaddstr(down_window, i%20+1, 0, i, A_BOLD)
+		i+=1
+	i=start	
+	
+	while i<f and i<nb_nodes:
+		mvwaddstr(down_window, i%20+1, decal+bordure[j]+1, str(nodes[i].node_id[1])+"/"+str(nodes[i].node_id[0]), A_BOLD)
+		i+=1
+	decal+=bordure[j]+2
+	j+=1	
+	i=start
+	while i<f and i<nb_nodes:
+		mvwaddstr(down_window, i%20+1, decal+bordure[j]+1, nodes[i].http_rack[0], A_BOLD)
+		i+=1
+	decal+=bordure[j]+1
+	j+=1
+	i=start
+	while i<f and i<nb_nodes:
+		mvwaddstr(down_window, i%20+1, decal+bordure[j], nodes[i].http_rack[1], A_BOLD)
+		i+=1	
+	
 	
 
 
-class cNodes(Thread):
-    def __init__(self,up_window,middel_window,nb_nodes,nodes):
+
+def N_footer(down_window,y):
+	mvwaddstr(down_window,y-14,0,"Press ESC To Return",color_pair(1)+A_BOLD+A_REVERSE)
+	
+
+	
+class N_Nodes(Thread):
+    def __init__(self):
         Thread.__init__(self)
     
     def run(self):
-    	header(nb_nodes,nodes,up_window,middel_window,page)
+    	stdscr=initscr()
+    	start_color()
+        keypad(stdscr,True)
+        noecho()
+        curs_set(False)
+    	while key!=27:
+    		nodes=set_nodes(nb_nodes)
+    		x=stdscr.getmaxyx()[1]
+    		y=stdscr.getmaxyx()[0]
+    		up_window=newwin(11,x, 0, 0)
+    		up_panel=new_panel(up_window)
+    		middel_window=newwin(2,x,11,0)
+    		middel_panel=new_panel(middel_window)
+    		down_window=newwin(y-13,x, 13, 0)
+    		down_panel=new_panel(down_window)
+    	 	header(nb_nodes,nodes,up_window,middel_window,page)
+    	 	down_window=newwin(y-13,x, 13, 0)
+    	 	down_panel=new_panel(down_window)
+    	 	N_footer(down_window,y)
+    	 	N_corp(down_window,nodes,nb_nodes,page,x,y)
+    	 	update_panels()
+    	 	doupdate()
+    	 	time.sleep(1)
+    		
+	
     	
 
 
 		
 
 class display(Thread):
-    def __init__(self,key):
+    def __init__(self):
         Thread.__init__(self)
     
     def run(self):
@@ -255,30 +349,31 @@ class display(Thread):
         keypad(stdscr,True)
         noecho()
         curs_set(False)
-        while key!=ord("q"):
+        while key!=ord("q") and key!=ord("Q"):
             #nodes=get_cluster_nodes()
             #nb_nodes=randint(0,365)
             x=stdscr.getmaxyx()[1]
             y=stdscr.getmaxyx()[0]
+            global nb_nodes
             nb_nodes=210
             nodes=set_nodes(nb_nodes)
         #     ================== window decomposition ===========================
             up_window=newwin(10,x, 0, 0)
             up_panel=new_panel(up_window)
-            up_pad=newpad(10,x)
-            middel_window=newwin(2,x,10,0)
+            middel_window=newwin(2,x,11,0)
             middel_panel=new_panel(middel_window)
-            down_window=newwin(y-12,x, 12, 0)
+            down_window=newwin(y-13,x, 13, 0)
             down_panel=new_panel(down_window)
         #   ===================================================================               
             header(nb_nodes,nodes,up_window,middel_window,page)
             footer(down_window,y)
             corp(down_window,nodes,nb_nodes,page,x,y)
-            thread2=cNodes(up_window,middel_window,nb_nodes,nodes)
-            if temp==ord("n"):
-            	print "sssssssss"
+            thread2=N_Nodes()
+            if key==ord("n"):
             	thread2.start()
-            	
+            	thread2.join()
+            	temp=109	
+            #mvwaddstr(down_window, y-15, 50,temp)
             update_panels()
             doupdate()
             time.sleep(1)			
@@ -289,10 +384,9 @@ def main():
 	global page
 	page=0
 	temp=key=109
-	thread1=display(temp)
+	thread1=display()
 	thread1.start()
-	while key!=ord("q"):
-		temp=109
+	while key!=ord("q")and key!=ord("Q"):
 		key=getch()
 		if key==ord("h") or key==KEY_UP or key==KEY_DOWN or key==ord("n"):
 			temp=key

@@ -7,7 +7,7 @@ def randomize(a):
 class Nodes:
 	def __init__(self):
 		self.node_id=[150208452197,8042]                    #get_node_id(self)      #host/port
-		self.http_rack=["dn04.hadoop.suty-ops.com:8042","/default"]       #get_http_rack(self)    #returns a list of http addr and rack name 
+		self.http_rack=["dn04.hadoop.suty-ops.com","/default"]       #get_http_rack(self)    #returns a list of http addr and rack name 
 		self.used=[1,1]                                                   #get_used(self)		 #used memory/ used cores	
 		self.capability=[randint(1,8000),randint(1,10)]                   #get_capability(self)	 #MEMORY CAPABILITY/ number of cores	
 		self.node_state=["NS_RUNNING"]                   #get_node_state(self)   #health report/ last health report time/ STATE
