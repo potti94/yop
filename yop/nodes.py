@@ -6,18 +6,18 @@ def randomize(a):
 
 class Nodes:
 	def __init__(self):
-		self.node_id=[150208452197,8042]                    #get_node_id(self)      #host/port
+		self.node_id=[150208452197,8042]                                #get_node_id(self)      #host/port
 		self.http_rack=["dn04.hadoop.suty-ops.com","/default"]       #get_http_rack(self)    #returns a list of http addr and rack name 
 		self.used=[1,1]                                                   #get_used(self)		 #used memory/ used cores	
-		self.capability=[randint(1,8000),randint(1,10)]                   #get_capability(self)	 #MEMORY CAPABILITY/ number of cores	
-		self.node_state=["NS_RUNNING"]                   #get_node_state(self)   #health report/ last health report time/ STATE
+		self.capability=[randint(1,8000),randint(1,10)]                          #get_capability(self)	 #MEMORY CAPABILITY/ number of cores	
+		self.node_state=["NS_RUNNING"]                                   #get_node_state(self)   #health report/ last health report time/ STATE
 		self.user=["Yassine.mcha7em"]												#NS: NS_RUNNING
-		self.queue=[1]
-		self.mem=[9600,12000,17000]	                             #mem=[UMEM,RMEM,NMEM]
-		self.c=[5,7,2]                                          # c=[UC,RC,NC]
-		self.co=[7,10]                                          # co=[UCO,RCO]
+		self.queue=[randint(1,10)]
+		self.mem=[randint(1,100000),randint(1,100000),randint(1,100000)]	        #mem=[UMEM,RMEM,NMEM]
+		self.c=[randint(1,10),randint(1,10),randint(1,10)]                           # c=[UC,RC,NC]
+		self.co=[randint(1,10),randint(1,10)]                                          # co=[UCO,RCO]
 		self.t=["MAPREDUCE"]
-		self.p=[42]
+		self.p=[randint(1,100)]
 		self.time=["8:19:32"]
 		self.name=["yoping.jar"]
 		
