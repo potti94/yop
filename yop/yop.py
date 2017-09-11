@@ -108,7 +108,7 @@ def header(nb_nodes,nodes,up_window,middel_window,page,x):
 	finish=20
 	global nb_pages
 	
-	nb_pages=(nb_nodes//(5*(x//35)))-1
+	nb_pages=nb_nodes//(5*(x//35))-1
 	if nb_nodes%(5*(x//35))!=0:
 		nb_pages+=1
 		
@@ -137,7 +137,7 @@ def header(nb_nodes,nodes,up_window,middel_window,page,x):
 	if page >nb_pages:
 		page=nb_pages
 				
-	start=page*(5*(x//35))
+	start=page*5*(x//35)
 	finish=page*(5*(x//35))+(5*(x//35))
 	i=start
 	f=finish
@@ -393,7 +393,7 @@ class N_Nodes(Thread):
     		N_corp(down_window,nodes,nb_nodes,page,x,y)
     		update_panels()
     		doupdate()
-    		time.sleep(2)
+    		time.sleep(1)
     		
 	
     	
@@ -417,14 +417,14 @@ class display(Thread):
             y=stdscr.getmaxyx()[0]
             global temp
             global nb_nodes
-            nb_nodes=29
+            nb_nodes=44
             nodes=set_nodes(nb_nodes)
         #     ================== window decomposition ===========================
-            up_window=newwin(10,x, 0, 0)
+            up_window=newwin(11,x, 0, 0)
             up_panel=new_panel(up_window)
             middel_window=newwin(2,x,11,0)
             middel_panel=new_panel(middel_window)
-            down_window=newwin(y-12,x, 13, 0)
+            down_window=newwin(y,x, 13, 0)
             down_panel=new_panel(down_window)
             command_window=newwin(1,x,y-1,0)
             command_panel=new_panel(command_window)
@@ -438,18 +438,20 @@ class display(Thread):
             	thread2.join()		
             update_panels()
             doupdate()
-            time.sleep(2)			
+            time.sleep(1)			
 
 def main():
 	global temp
 	global key
 	global page
 	page=0
+	stdscr=initscr()
+	keypad(stdscr,True)
 	temp=key=109
 	thread1=display()
 	thread1.start()
 	while key!=ord("q") and key!=ord("Q"):
-		key=getch()
+		key=float(getch())
 		if key==ord("h") or key==KEY_UP or key==KEY_DOWN or key==ord("n")or key==27or key==ord("s"):
 			temp=key
 			if temp==KEY_UP or temp==KEY_DOWN:
@@ -466,8 +468,7 @@ def main():
 						page-=1
 		
 			
-	
-	thread1.join()		
+			
 	endwin()
 	quit()
 	
